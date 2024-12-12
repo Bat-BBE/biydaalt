@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Монгол Хурдан Бичиг</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.haranhui {
+            background-color: #222;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        header.haranhui {
+            background: #444;
+        }
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+        .shalgalt-heseg {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .shalgalt-heseg.haranhui {
+            color: #000000;
+            background: #000000;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007BFF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button.haranhui {
+            background: #555;
+            color: #000000;
+        }
+        button.haranhui:hover {
+            background: #777;
+        }
+        #statistik {
+            margin-top: 20px;
+        }
+        #tohirgoo {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: #49cc03e8;
+            font-weight: bold;
+        }
+        #gorimSolih {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            background: #000000;
+            color: #ffffff;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #gorimSolih.haranhui {
+            background: #f4f4f4;
+            color: #000000;
+        }
+
+        #delgerenguiUnelgee {
+            display: none;
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <button id="gorimSolih">Харанхуйн горим</button>
+    <header>
+        <h1>Монгол Хурдан Бичиг</h1>
+    </header>
+    <main>
+        <div id="tohirgoo">
+            <label for="hugatsaa">Хугацаа: </label>
+            <select id="hugatsaa">
+                <option value="20">20 секунд</option>
+                <option value="30">30 секунд</option>
+            </select>
+            <label for="tuvshin">Түвшин: </label>
+            <select id="tuvshin">
+                <option value="hyalbar">Хялбар</option>
+                <option value="dundaj">Дундаж</option>
+                <option value="hetsuu">Хэцүү</option>
+            </select>
+        </div>
+        <section id="shalgalt">
+            <div class="shalgalt-heseg">
+                <h2>Хурдан бичлэгийн шалгалт</h2>
+                <p id="testText">Тест эхлэхэд текст автоматаар гарна.</p>
+                <textarea id="bichihTalbar" placeholder="Энд текст бичнэ үү..." disabled></textarea>
+                <button id="shalgaltEhleh">Шалгалт эхлүүлэх</button>
+                <div id="statistik">
+                    <p>Хугацаа: <span id="tsag">0</span> секунд</p>
+                    <p>Хурд: <span id="hurdanBichih">0</span>үг/м</p>
+                    <p>Нарийвчлал: <span id="narivchlal">0</span>%</p>
+                </div>
+            </div>
+            <div id="delgerenguiUnelgee">
+                <h3>Дэлгэрэнгүй үнэлгээ:</h3>
+                <ul id="unelgeeJagsaalt"></ul>
+            </div>
+        </section>
+    </main>
+    <script>
+        const gorimSolih = document.getElementById('gorimSolih');
+        gorimSolih.addEventListener('click', () => {
+            document.body.classList.toggle('haranhui');
+            gorimSolih.classList.toggle('haranhui');
+            gorimSolih.textContent = document.body.classList.contains('haranhui') ? 'Гэрлийн горим' : 'Харанхуйн горим';
+        });
+
+        const testTexteuud = {
+            hyalbar: [
+                "Монгол хэлний үгийн санг баяжуулъя. Энгийн өгүүлбэр бичье. Уулын оройгоос нар мандана. Ширээн дээр ном байна.",
+                "Салхи намуухан сэвэлзэнэ. Бид бүгд хамтдаа зугааллаа. Ширээн дээр ном байна. Монгол хэлний үгийн санг баяжуулъя."
+            ],
+            dundaj: [
+                "Шинэ санааг бичих нь чухал. Өглөөний гэгээ тодроход шувууд жиргэлдэнэ. Уламжлал өвөрмөц. Энгийн өгүүлбэр бичье. Уулын оройгоос нар мандана.",
+                "Цас бударсан үдшээр халуун цай уух нь сайхан. Амжилтад хүрэхийн тулд тууштай байх хэрэгтэй. Бид бүгд хамтдаа зугааллаа. Ширээн дээр ном байна."
+            ],
+            hetsuu: [
+                "Монгол хэлний дүрмийн онцлогийг танин мэдье. Түүхэн баримтуудыг хадгалах нь чухал. Амжилтад хүрэхийн тулд тууштай байх хэрэгтэй. Бид бүгд хамтдаа зугааллаа. Ширээн дээр ном байна. Уулын оройгоос нар мандана.",
+                "Нарийн ширийн зүйлд анхаарал хандуулж, алдаа гаргахгүй байх чухал.Монгол хэлний үгийн санг баяжуулъя. Энгийн өгүүлбэр бичье. Уулын оройгоос нар мандана.Бид бүгд хамтдаа зугааллаа. Ширээн дээр ном байна."
+            ]
+        };
+
+        document.getElementById("shalgaltEhleh").addEventListener("click", function () {
+
+            const hugatsaa = parseInt(document.getElementById("hugatsaa").value);
+            const tuvshin = document.getElementById("tuvshin").value;
+
+            const testText = testTexteuud[tuvshin][Math.floor(Math.random() * testTexteuud[tuvshin].length)];
+            document.getElementById("testText").textContent = testText;
+
+            const ug = testText.split(" ");
+            let zovUgToo = 0;
+
+            document.getElementById("bichihTalbar").value = "";
+            document.getElementById("bichihTalbar").disabled = false;
+            document.getElementById("bichihTalbar").focus();
+
+            let uldsenTsag = hugatsaa;
+            document.getElementById("tsag").textContent = uldsenTsag;
+
+            const hugatsaaniiToolol = setInterval(() => {
+                uldsenTsag--;
+                document.getElementById("tsag").textContent = uldsenTsag;
+
+                if (uldsenTsag <= 0) {
+                    clearInterval(hugatsaaniiToolol);
+                    document.getElementById("bichihTalbar").disabled = true;
+
+                    const bichsenUg = document.getElementById("bichihTalbar").value.trim().split(/\s+/);
+                    const unelgeeJagsaalt = document.getElementById("unelgeeJagsaalt");
+                    unelgeeJagsaalt.innerHTML = "";
+
+                    bichsenUg.forEach((word, i) => {
+                        const unelgeeItem = document.createElement("li");
+                        if (word === ug[i]) {
+                            zovUgToo++;
+                            unelgeeItem.textContent = `${word} - ✅ Зөв`;
+                            unelgeeItem.style.color = "green";
+                        } else {
+                            unelgeeItem.textContent = `${word} - ❌ Буруу`;
+                            unelgeeItem.style.color = "red";
+                        }
+                        unelgeeJagsaalt.appendChild(unelgeeItem);
+                    });
+                    const narivchlal = ((zovUgToo / ug.length) * 100).toFixed(2);
+                    const hurd = Math.floor((zovUgToo / hugatsaa) * 60);
+                    document.getElementById("hurdanBichih").textContent = hurd;
+                    document.getElementById("narivchlal").textContent = narivchlal;
+                    document.getElementById("delgerenguiUnelgee").style.display = "block";
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
